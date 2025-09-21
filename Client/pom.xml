@@ -5,7 +5,6 @@
         <groupId>org.finite</groupId>
         <artifactId>PlanetLang</artifactId>
         <version>0.1</version>
-        <relativePath>../PlanetLang/pom.xml</relativePath>
     </parent>
     <artifactId>PlanetLangClient</artifactId>
     <packaging>jar</packaging>
