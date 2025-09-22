@@ -9,12 +9,20 @@ package org.finite.planetlangclient;
  * @author GAMER
  */
 import java.util.logging.Logger;
-import org.finite.planetlangclient.WIndow;
+import javax.swing.SwingUtilities;
+import org.finite.planetlangclient.ui.ThemeManager;
+import org.finite.planetlangclient.ui.ModernMainWindow;
+
 public class PlanetLangClient {
 
     public static void main(String[] args) {
-        WIndow RootWindow = new WIndow();
-        RootWindow.setVisible(true);
-        //TODO: fill this with important stuff
+        // Initialize modern theme system
+        SwingUtilities.invokeLater(() -> {
+            ThemeManager.initialize();
+            
+            // Create and show the modern main window
+            ModernMainWindow mainWindow = new ModernMainWindow();
+            mainWindow.setVisible(true);
+        });
     }
 }

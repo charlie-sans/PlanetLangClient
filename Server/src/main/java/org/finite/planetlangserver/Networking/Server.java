@@ -5,6 +5,8 @@ import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.*;
@@ -44,11 +46,14 @@ public class Server {
     }
 
     private class ClientHandler implements Runnable {
+        private static final int DEFAULT_READ_TIMEOUT = 60000; // 60 seconds
+        
         private Socket clientSocket;
         private PrintWriter out;
         private BufferedReader in;
-        private boolean running = true;
+        private final AtomicBoolean running = new AtomicBoolean(true);
         private String sessionId;
+        private long lastActivity = System.currentTimeMillis();
 
         public ClientHandler(Socket socket) {
             this.clientSocket = socket;
@@ -57,24 +62,52 @@ public class Server {
         @Override
         public void run() {
             try {
+                // Set socket timeout for robustness
+                clientSocket.setSoTimeout(DEFAULT_READ_TIMEOUT);
+                clientSocket.setKeepAlive(true);
+                clientSocket.setTcpNoDelay(true);
+                
                 out = new PrintWriter(clientSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
                 // Create user session
                 sessionId = vmManager.createUserSession(clientSocket.getInetAddress().toString());
                 out.println("SESSION:" + sessionId);
+                updateActivity();
 
                 String inputLine;
-                while (running && (inputLine = in.readLine()) != null) {
-                    System.out.println("Received: " + inputLine);
+                while (running.get() && (inputLine = readLineWithTimeout()) != null) {
+                    System.out.println("Received from " + sessionId + ": " + inputLine);
                     String response = processCommand(inputLine);
                     out.println(response);
+                    updateActivity();
                 }
+            } catch (SocketTimeoutException e) {
+                System.out.println("Client " + sessionId + " timed out");
             } catch (IOException e) {
-                System.out.println("Client disconnected: " + e.getMessage());
+                if (running.get()) {
+                    System.out.println("Client " + sessionId + " disconnected: " + e.getMessage());
+                }
             } finally {
                 stop();
             }
+        }
+        
+        private String readLineWithTimeout() throws IOException {
+            try {
+                return in.readLine();
+            } catch (SocketTimeoutException e) {
+                // Check if client has been inactive for too long
+                long inactiveTime = System.currentTimeMillis() - lastActivity;
+                if (inactiveTime > DEFAULT_READ_TIMEOUT) {
+                    throw e; // Re-throw to disconnect inactive clients
+                }
+                return null; // Continue waiting
+            }
+        }
+        
+        private void updateActivity() {
+            lastActivity = System.currentTimeMillis();
         }
 
         private String processCommand(String command) {
@@ -102,6 +135,9 @@ public class Server {
                     return vmManager.addChatMessage(sessionId, message);
                 } else if (command.equals("GET_CHAT_MESSAGES")) {
                     return "CHAT_MESSAGES:" + vmManager.getChatMessages();
+                } else if (command.equals("PING")) {
+                    // Keep-alive response
+                    return "PONG";
                 } else {
                     return "ERROR: Unknown command: " + command;
                 }
@@ -111,8 +147,12 @@ public class Server {
         }
 
         public void stop() {
-            running = false;
+            running.set(false);
             try {
+                // Note: Add session cleanup if PlanetVMManager supports it
+                // if (sessionId != null) {
+                //     vmManager.removeUserSession(sessionId);
+                // }
                 if (in != null) in.close();
                 if (out != null) out.close();
                 if (clientSocket != null && !clientSocket.isClosed()) {
@@ -121,6 +161,10 @@ public class Server {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            
+            // Remove this client from the server's client list
+            clients.remove(this);
+            System.out.println("Client handler stopped for session: " + sessionId);
         }
     }
 }

@@ -1,7 +1,17 @@
-/run/media/charlie/the cat storage v2/PlanetLangClient/Client/src/main/java/org/finite/planetlangclient/StackMonitorWindow.java
-/run/media/charlie/the cat storage v2/PlanetLangClient/Client/src/main/java/org/finite/planetlangclient/QuickTest.java
-/run/media/charlie/the cat storage v2/PlanetLangClient/Client/src/main/java/org/finite/planetlangclient/Windows/ServerWindow.java
-/run/media/charlie/the cat storage v2/PlanetLangClient/Client/src/main/java/org/finite/planetlangclient/PlanetLangClient.java
-/run/media/charlie/the cat storage v2/PlanetLangClient/Client/src/main/java/org/finite/planetlangclient/TestClient.java
-/run/media/charlie/the cat storage v2/PlanetLangClient/Client/src/main/java/org/finite/planetlangclient/WIndow.java
-/run/media/charlie/the cat storage v2/PlanetLangClient/Client/src/main/java/org/finite/planetlangclient/ClientConnection.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\components\ModernStatusBar.java
+D:\PlanetLangClient\Client\target\generated-sources\protobuf\java\org\finite\planetlang\proto\PlanetLangProto.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\ThemeManager.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\components\ModernConnectionPanel.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\PlanetLangClient.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\QuickTest.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\ModernMainWindow.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\components\ModernToolBar.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\components\ModernCodeEditor.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\components\ModernStackMemoryWindow.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\components\ModernStackMonitor.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\WIndow.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\TestClient.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ui\components\ModernChatPanel.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\Windows\ServerWindow.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\StackMonitorWindow.java
+D:\PlanetLangClient\Client\src\main\java\org\finite\planetlangclient\ClientConnection.java

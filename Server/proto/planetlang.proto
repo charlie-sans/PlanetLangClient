@@ -1,0 +1,160 @@
+syntax = "proto3";
+
+package planetlang;
+
+option java_package = "org.finite.planetlang.proto";
+option java_outer_classname = "PlanetLangProto";
+
+// Base message wrapper for all client-server communication
+message Message {
+  string session_id = 1;
+  uint64 message_id = 2;
+  oneof payload {
+    Request request = 3;
+    Response response = 4;
+    KeepAlive keep_alive = 5;
+  }
+}
+
+// Request types from client to server
+message Request {
+  oneof request_type {
+    InitSessionRequest init_session = 1;
+    ExecuteInstructionRequest execute_instruction = 2;
+    StackOperationRequest stack_operation = 3;
+    GetStateRequest get_state = 4;
+    ChatRequest chat = 5;
+  }
+}
+
+// Response types from server to client
+message Response {
+  bool success = 1;
+  string error_message = 2;
+  oneof response_type {
+    InitSessionResponse init_session = 3;
+    ExecuteInstructionResponse execute_instruction = 4;
+    StackOperationResponse stack_operation = 5;
+    GetStateResponse get_state = 6;
+    ChatResponse chat = 7;
+  }
+}
+
+// Session initialization
+message InitSessionRequest {
+  string client_info = 1;
+}
+
+message InitSessionResponse {
+  string session_id = 1;
+  string server_info = 2;
+}
+
+// Instruction execution
+message ExecuteInstructionRequest {
+  enum ExecutionScope {
+    LOCAL = 0;
+    GLOBAL = 1;
+  }
+  ExecutionScope scope = 1;
+  string instruction = 2;
+}
+
+message ExecuteInstructionResponse {
+  string result = 1;
+  repeated string stack_changes = 2;
+}
+
+// Stack operations
+message StackOperationRequest {
+  enum OperationType {
+    SHARE_TO_GLOBAL = 0;
+    TAKE_FROM_GLOBAL = 1;
+  }
+  OperationType operation = 1;
+}
+
+message StackOperationResponse {
+  string result = 1;
+  StackState new_state = 2;
+}
+
+// State queries
+message GetStateRequest {
+  enum StateType {
+    USER_STACK = 0;
+    GLOBAL_STACK = 1;
+    USER_MEMORY = 2;
+    GLOBAL_MEMORY = 3;
+  }
+  StateType state_type = 1;
+}
+
+message GetStateResponse {
+  oneof state {
+    StackState stack_state = 1;
+    MemoryState memory_state = 2;
+  }
+}
+
+// Chat functionality
+message ChatRequest {
+  oneof chat_type {
+    SendChatMessage send_message = 1;
+    GetChatMessages get_messages = 2;
+  }
+}
+
+message SendChatMessage {
+  string message = 1;
+}
+
+message GetChatMessages {
+  uint64 since_timestamp = 1;
+}
+
+message ChatResponse {
+  oneof chat_response {
+    SendChatResponse send_response = 1;
+    GetChatMessagesResponse get_response = 2;
+  }
+}
+
+message SendChatResponse {
+  uint64 message_id = 1;
+  uint64 timestamp = 2;
+}
+
+message GetChatMessagesResponse {
+  repeated ChatMessage messages = 1;
+}
+
+message ChatMessage {
+  uint64 message_id = 1;
+  string session_id = 2;
+  string message = 3;
+  uint64 timestamp = 4;
+}
+
+// Data structures
+message StackState {
+  repeated StackElement elements = 1;
+}
+
+message StackElement {
+  oneof value {
+    int64 int_value = 1;
+    double double_value = 2;
+    string string_value = 3;
+    bool bool_value = 4;
+  }
+}
+
+message MemoryState {
+  map<string, StackElement> variables = 1;
+}
+
+// Keep alive for connection health
+message KeepAlive {
+  uint64 timestamp = 1;
+}
